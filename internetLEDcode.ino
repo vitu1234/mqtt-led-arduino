@@ -4,6 +4,9 @@
 #include <ArduinoJson.h>
 // GPIO 5 D1
 #define LED_PIN          5
+int button = 16;  // push button is connected
+int buttonState = LOW;  // current state of the button
+int lastButtonState = LOW;  // previous state of the button
 
 // WiFi
 const char *ssid = "onap_wifi"; // Enter your WiFi name
@@ -48,8 +51,8 @@ void setup() {
 
     // Setting LED pin as output
     pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, LOW);  // Turn off the LED initially
-
+    // digitalWrite(LED_PIN, LOW);  // Turn off the LED initially
+    pinMode(button, INPUT); 
 
     // Connecting to an MQTT broker
     client.setServer(mqtt_broker, mqtt_port);
@@ -93,13 +96,15 @@ void callback(char *topic, byte *payload, unsigned int length) {
       ledState = false;
       publishData();
     }
+
+
     publishData();
     Serial.println();
     Serial.println("-----------------------");
 }
 
 void loop() {
-  
+    buttonEvents();
     client.loop();
     delay(1000); // Delay for a short period in each loop iteration
 }
@@ -126,5 +131,27 @@ void publishData(){
   yield();
 }
 
+
+void buttonEvents() {
+  buttonState = digitalRead(button);  // read the current state of the button
+
+  // Check if button state has changed
+  if (buttonState != lastButtonState) {
+    if (buttonState == HIGH) {
+      digitalWrite(LED_PIN, !digitalRead(LED_PIN));  // Toggle LED state
+      if (digitalRead(LED_PIN) == HIGH) {
+        Serial.println("LED Turned ON");
+        ledState=true;
+      } else {
+        Serial.println("LED Turned OFF");
+        ledState=false;
+      }
+    }
+    publishData();
+    delay(50);  // Debounce delay to avoid multiple readings due to button bounce
+  }
+
+  lastButtonState = buttonState;  // save the current button state for comparison
+}
 
 
