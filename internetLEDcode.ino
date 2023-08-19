@@ -10,9 +10,12 @@ const char *ssid = "onap_wifi"; // Enter your WiFi name
 const char *password = "87654321";  // Enter WiFi password
 
 // MQTT Broker
+String device_id = "esp8266-q2svd53zb9p4";
 const char *mqtt_broker = "192.168.12.225";
 const char *topic = "device/edge/upstream/wifi";
-const char *sub_topic = "cloud/device/downstream/wifi";
+const char *s_topic = "cloud/device/downstream/wifi/";
+const char *sub_topic = "cloud/device/downstream/wifi/esp8266-q2svd53zb9p4";
+
 const char *mqtt_username = "flotta";
 const char *mqtt_password = "flotta";
 const int mqtt_port = 1883;
@@ -24,7 +27,7 @@ int WILL_QoS= 0;
 bool WILL_Retain= true;
 const PROGMEM char* WILL_Message= "offline";
 String client_id = "esp8266-switch-";
-String device_id = "esp8266-q2svd53zb9p4";
+
 bool ledState = false;
 
 WiFiClient espClient;
